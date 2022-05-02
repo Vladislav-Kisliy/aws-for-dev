@@ -1,0 +1,1 @@
+aws --profile svc-PRIVATE_USER cloudformation create-stack --stack-name ec2-example --template-body file://ec2.json --parameters ParameterKey=AvailabilityZone,ParameterValue=us-east-1a ParameterKey=EnvironmentType,ParameterValue=test ParameterKey=KeyPairName,ParameterValue=vlad-aws
