@@ -1,0 +1,1 @@
+aws --profile svc-PRIVATE_USER cloudformation create-stack --stack-name ec2-example --capabilities CAPABILITY_NAMED_IAM --template-body file://ec01-as.json --parameters ParameterKey=KeyPairName,ParameterValue=vlad-aws ParameterKey=Subnets,ParameterValue=subnet-005f36f8230df35fd
