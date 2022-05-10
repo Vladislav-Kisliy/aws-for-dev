@@ -16,6 +16,11 @@
       ],
       "Default": "t2.micro"
     },
+    "KeyPairName": {
+      "Type": "String",
+      "Description": "The name of an existing Amazon EC2 key pair in this region to use to SSH into the Amazon EC2 instances.",
+      "Default": "vlad-aws"
+    },
     "Subnets": {
       "Type": "List<AWS::EC2::Subnet::Id>",
       "Description": "A list of subnets for the Auto Scaling group",
@@ -26,10 +31,35 @@
     "myLaunchTemplate": {
       "Type": "AWS::EC2::LaunchTemplate",
       "Properties": {
-        "LaunchTemplateName": { "Fn::Sub": "${AWS::StackName}-launch-template" },
+        "LaunchTemplateName": {
+          "Fn::Sub": "${AWS::StackName}-launch-template"
+        },
         "LaunchTemplateData": {
-          "ImageId": { "Ref": "LatestAmiId" },
-          "InstanceType": { "Ref": "InstanceType" }
+          "ImageId": {
+            "Ref": "LatestAmiId"
+          },
+          "InstanceType": {
+            "Ref": "InstanceType"
+          },
+          "UserData": {
+            "Fn::Base64": {
+              "Fn::Join": [
+                "",
+                [
+                  "#!/bin/bash -xe\n",
+                  "yum update -y\n",
+                  "yum install -y httpd\n",
+                  "systemctl start httpd\n"
+                ]
+              ]
+            }
+          },
+          "KeyName": {
+            "Ref": "KeyPairName"
+          },
+          "SecurityGroupIds": [
+            "sg-026e293ffb7b6ab6b"
+          ]
         }
       }
     },
@@ -37,14 +67,29 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "LaunchTemplate": {
-          "LaunchTemplateId": { "Ref": "myLaunchTemplate" },
-          "Version": { "Fn::GetAtt": [ "myLaunchTemplate", "LatestVersionNumber" ] }
+          "LaunchTemplateId": {
+            "Ref": "myLaunchTemplate"
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "myLaunchTemplate",
+              "LatestVersionNumber"
+            ]
+          }
         },
         "MaxSize": "3",
         "MinSize": "2",
         "DesiredCapacity": "2",
-        "VPCZoneIdentifier": { "Ref": "Subnets" }
+        "VPCZoneIdentifier": {
+          "Ref": "Subnets"
+        }
       }
+    }
+  },
+  "Outputs" : {
+    "AutoScaleName" : {
+      "Description" : "Something to output",
+      "Value" : { "Fn::Sub": "${myASG}" }
     }
   }
 }
