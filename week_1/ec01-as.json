@@ -20,14 +20,35 @@
       "Type": "String",
       "Description": "The name of an existing Amazon EC2 key pair in this region to use to SSH into the Amazon EC2 instances.",
       "Default": "vlad-aws"
-    },
-    "Subnets": {
-      "Type": "List<AWS::EC2::Subnet::Id>",
-      "Description": "A list of subnets for the Auto Scaling group",
-      "Default": "subnet-005f36f8230df35fd"
     }
   },
   "Resources": {
+    "WebAppSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow HTTP/HTTPS and SSH inbound and outbound traffic",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
     "myLaunchTemplate": {
       "Type": "AWS::EC2::LaunchTemplate",
       "Properties": {
@@ -57,8 +78,10 @@
           "KeyName": {
             "Ref": "KeyPairName"
           },
-          "SecurityGroupIds": [
-            "sg-026e293ffb7b6ab6b"
+          "SecurityGroups": [
+            {
+              "Ref": "WebAppSecurityGroup"
+            }
           ]
         }
       }
@@ -80,16 +103,18 @@
         "MaxSize": "3",
         "MinSize": "2",
         "DesiredCapacity": "2",
-        "VPCZoneIdentifier": {
-          "Ref": "Subnets"
-        }
+        "AvailabilityZones": [
+          "us-east-1a"
+        ]
       }
     }
   },
-  "Outputs" : {
-    "AutoScaleName" : {
-      "Description" : "Something to output",
-      "Value" : { "Fn::Sub": "${myASG}" }
+  "Outputs": {
+    "AutoScaleName": {
+      "Description": "Something to output",
+      "Value": {
+        "Fn::Sub": "${myASG}"
+      }
     }
   }
 }
