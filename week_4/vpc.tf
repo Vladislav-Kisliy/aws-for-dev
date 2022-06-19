@@ -19,6 +19,8 @@ resource "aws_subnet" "public_subnet" {
   count      = "${length(var.public_subnets_cidr)}"
   cidr_block = "${element(var.public_subnets_cidr, count.index)}"
   map_public_ip_on_launch = true
+  availability_zone = "us-east-1a"
+
   tags                    = {
     Name = "w4-public-subnet"
   }
@@ -29,6 +31,8 @@ resource "aws_subnet" "private_subnet" {
   count                   = "${length(var.private_subnets_cidr)}"
   cidr_block              = "${element(var.private_subnets_cidr, count.index)}"
   map_public_ip_on_launch = false
+  availability_zone = "us-east-1b"
+
   tags                    = {
     Name = "w4-private-subnet"
   }
