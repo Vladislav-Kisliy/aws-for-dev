@@ -1,0 +1,3 @@
+aws sqs send-message --region us-east-1 --queue-url https://sqs.us-east-1.amazonaws.com/023512542764/5week  --message-body "Information about the largest city in Any Region."
+
+aws sns publish --region us-east-1 --topic-arn arn:aws:sns:us-east-1:023512542764:5week --message "Hello World"
