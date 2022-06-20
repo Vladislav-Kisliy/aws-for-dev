@@ -1,5 +1,6 @@
 resource "aws_elb" "web_elb" {
   name            = "web-elb"
+
   security_groups = [
     "${aws_security_group.public_nat_group.id}"
   ]
@@ -56,7 +57,7 @@ resource "aws_autoscaling_group" "web" {
   ]
   metrics_granularity = "1Minute"
   vpc_zone_identifier = [
-#    aws_subnet.public_subnet[0].id,
+    aws_subnet.public_subnet[0].id,
     aws_subnet.private_subnet[0].id
   ]
   # Required to redeploy without an outage.
